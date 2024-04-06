@@ -1,0 +1,15 @@
+custom.example:
+  path: '/custom/example'
+  defaults:
+    _title: 'Example'
+    _controller: '\Drupal\custom\Controller\CustomController::build'
+  requirements:
+    _permission: 'access content'
+
+custom.simple_form:
+  path: '/examples/custom/simple-form'
+  defaults:
+    _title: 'Example Form'
+    _form: '\Drupal\custom\Form\SimpleForm'
+  requirements:
+    _permission: 'access content'

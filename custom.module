@@ -1,0 +1,25 @@
+<?php
+
+use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormstateInterface;
+
+/**
+ * Implements hook_form_alter().
+ */
+function custom_form_alter(&$form, $form_state, $form_id) {
+  if ($form_id == 'custom_simple_form') {
+    $form['#validate'][] = 'custom_simple_form_validate'; 
+  }
+}
+
+/**
+ * Form validation callback.
+ */
+function custom_simple_form_validate($form, FormStateInterface &$form_state) {
+  $skip_validation = $form_state->getValue('skip_validation');
+  $title = $form_state->getValue('title');
+  if (!$skip_validation && strlen($title) < 5) {
+    // Set an error for the form element with a key of "title".
+    $form_state->setErrorByName('title', t('The title must be at least 5 characters long.'));
+  }
+}
