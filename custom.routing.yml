@@ -13,3 +13,11 @@ custom.simple_form:
     _form: '\Drupal\custom\Form\SimpleForm'
   requirements:
     _permission: 'access content'
+
+custom.greeting_form:
+  path: 'admin/config/salutation-configuration'
+  defaults:
+    _title: 'Salutation Configuration'
+    _form: Drupal\custom\Form\SalutationConfigurationForm
+  requirements:
+    _permission: 'administer site configuration'
