@@ -1,0 +1,90 @@
+<?php declare(strict_types = 1);
+
+namespace Drupal\sg_field_formatter\Plugin\Field\FieldFormatter;
+
+use Drupal\Component\Utility\Unicode;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Path\PathValidatorInterface;
+use Drupal\link\Plugin\Field\FieldFormatter\LinkFormatter;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Plugin implementation of the 'Link field formatter' formatter.
+ *
+ * @FieldFormatter(
+ *   id = "sg_link_field_formatter",
+ *   label = @Translation(" Sg Link field formatter"),
+ *   field_types = {"link"},
+ * )
+ */
+Class SgLinkFieldFormatter extends LinkFormatter {
+
+  /**
+   * {@inheritdoc}
+   */
+   public static function defaultSettings(): array {
+    return [
+      'link_class' => 'a-icon-link',
+    ] + parent::defaultSettings();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+   public function settingsForm(array $form, FormStateInterface $form_state): array {
+    $elements['link_class'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Link class'),
+      '#default_value' => $this->getLinkClass(),
+      '#required' => FALSE,
+    ];
+    return $elements;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function settingsSummary(): array {
+    $summary = parent::settingsSummary();
+    $summary[] = $this->t('Link class: @text', ['@text' => $this->getLinkClass()]);
+    return $summary;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function viewElements(FieldItemListInterface $items, $langcode) {
+    $element = [];
+    $entity = $items->getEntity();
+    foreach ($items as $delta => $item) {
+      $url = $this->buildUrl($item);
+      //$link_title = $url->toString();
+      $link_title = \Drupal::token()->replace($item->title, [$entity->getEntityTypeId() => $entity], ['clear' => TRUE]);
+
+      $element[$delta] = [
+        '#type' => 'link',
+        '#title' => $link_title,
+        '#options' => $url->getOptions(),
+        '#attributes' => [
+          'class' => $this->getLinkClass(),
+        ],
+      ];
+      $element[$delta]['#url'] = $url;
+
+    }
+    return $element;
+  }
+
+  /**
+   * Return link class from field formatter settings.
+   */
+  private function getLinkClass() {
+    return $this->getSettings()['link_class'];
+
+  }
+
+}
